@@ -15,7 +15,6 @@ abstract class Room {
     public String getRoomType() {
         return roomType;
     }
-
     public int getBeds() {
         return beds;
     }
