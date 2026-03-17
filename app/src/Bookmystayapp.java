@@ -1,5 +1,5 @@
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Queue;
+import java.util.LinkedList;
 
 abstract class Room {
     private String roomType;
@@ -15,6 +15,7 @@ abstract class Room {
     public String getRoomType() {
         return roomType;
     }
+
     public int getBeds() {
         return beds;
     }
@@ -62,59 +63,55 @@ class SuiteRoom extends Room {
     }
 }
 
-class RoomInventory {
-    private HashMap<String, Integer> inventory;
+class Reservation {
+    private String guestName;
+    private String roomType;
 
-    public RoomInventory() {
-        inventory = new HashMap<>();
+    public Reservation(String guestName, String roomType) {
+        this.guestName = guestName;
+        this.roomType = roomType;
     }
 
-    public void addRoomType(String roomType, int count) {
-        inventory.put(roomType, count);
+    public String getGuestName() {
+        return guestName;
     }
 
-    public int getAvailability(String roomType) {
-        return inventory.getOrDefault(roomType, 0);
+    public String getRoomType() {
+        return roomType;
+    }
+}
+
+class BookingRequestQueue {
+    private Queue<Reservation> queue;
+
+    public BookingRequestQueue() {
+        queue = new LinkedList<>();
     }
 
-    public void updateAvailability(String roomType, int count) {
-        inventory.put(roomType, count);
+    public void addRequest(Reservation reservation) {
+        queue.offer(reservation);
     }
-
-    public void displayInventory() {
-        System.out.println("===== Room Inventory =====");
-        for (Map.Entry<String, Integer> entry : inventory.entrySet()) {
-            System.out.println(entry.getKey() + " Available: " + entry.getValue());
+    public void displayQueue() {
+        System.out.println("===== Booking Request Queue =====");
+        for (Reservation r : queue) {
+            System.out.println("Guest: " + r.getGuestName() + " | Room: " + r.getRoomType());
         }
     }
 }
 
-class InventorySetup {
+public class UseCase5BookingRequestQueue {
     public static void main(String[] args) {
         Room single = new SingleRoom();
         Room doubleRoom = new DoubleRoom();
         Room suite = new SuiteRoom();
 
-        RoomInventory inventory = new RoomInventory();
+        BookingRequestQueue requestQueue = new BookingRequestQueue();
 
-        inventory.addRoomType(single.getRoomType(), 5);
-        inventory.addRoomType(doubleRoom.getRoomType(), 3);
-        inventory.addRoomType(suite.getRoomType(), 2);
+        requestQueue.addRequest(new Reservation("Amar", single.getRoomType()));
+        requestQueue.addRequest(new Reservation("Ravi", doubleRoom.getRoomType()));
+        requestQueue.addRequest(new Reservation("Sneha", suite.getRoomType()));
+        requestQueue.addRequest(new Reservation("Kiran", single.getRoomType()));
 
-        System.out.println("===== Room Details =====\n");
-
-        single.displayRoomDetails();
-        System.out.println("Available: " + inventory.getAvailability(single.getRoomType()));
-        System.out.println();
-
-        doubleRoom.displayRoomDetails();
-        System.out.println("Available: " + inventory.getAvailability(doubleRoom.getRoomType()));
-        System.out.println();
-
-        suite.displayRoomDetails();
-        System.out.println("Available: " + inventory.getAvailability(suite.getRoomType()));
-        System.out.println();
-
-        inventory.displayInventory();
+        requestQueue.displayQueue();
     }
 }
